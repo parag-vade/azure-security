@@ -17,7 +17,39 @@ Traffic flowing over the internet is exposed to all kinds of threats. A VPN crea
 2. Deploy a VPN Gateway - The VPN Gateway and its resources are deployed in a dedicated subnet called Gateway Subnet. The VPN Gateway will have a public IP.
 (Cost consideration: VPN Gateways are billed per hour and can be expensive)
 
-3. Authenticate clients - For lab purposes, we’ll use a self-signed certificate generated using a PowerShell script.
+3. Authenticate clients - For lab purposes, we’ll generate a self-signed certificate generated using following PowerShell scripts-
+    - Self signed root certificate
+    $params = @{
+    Type = 'Custom'
+    Subject = 'CN=P2SRootCert'
+    KeySpec = 'Signature'
+    KeyExportPolicy = 'Exportable'
+    KeyUsage = 'CertSign'
+    KeyUsageProperty = 'Sign'
+    KeyLength = 2048
+    HashAlgorithm = 'sha256'
+    NotAfter = (Get-Date).AddMonths(24)
+    CertStoreLocation = 'Cert:\CurrentUser\My'
+    }
+    $cert = New-SelfSignedCertificate @params
+    - Client certificate
+    $params = @{
+       Type = 'Custom'
+       Subject = 'CN=P2SChildCert'
+       DnsName = 'P2SChildCert'
+       KeySpec = 'Signature'
+       KeyExportPolicy = 'Exportable'
+       KeyLength = 2048
+       HashAlgorithm = 'sha256'
+       NotAfter = (Get-Date).AddMonths(18)
+       CertStoreLocation = 'Cert:\CurrentUser\My'
+       Signer = $cert
+       TextExtension = @(
+        '2.5.29.37={text}1.3.6.1.5.5.7.3.2')
+   }
+   New-SelfSignedCertificate @params
+    (https://learn.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-certificates-point-to-site)
+
 
 4. Download and install the VPN client from the VPN Gateway on the client machine to establish the VPN connection.
 

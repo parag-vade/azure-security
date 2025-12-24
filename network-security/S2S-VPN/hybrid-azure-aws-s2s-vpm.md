@@ -95,12 +95,21 @@ The flow follows these dependencies while parallelizing where possible.
 
 ---
 
-### When It All Works
+## Lab Results
 
-Success looks like this: Azure portal shows the connection status as "Connected." AWS console shows at least one tunnel status as "UP." And most importantly, you can SSH into your Azure VM and ping the private IP of your AWS EC2 instance — packets flowing securely through the tunnel, across the public internet, completely encrypted.
+### Connectivity Proof
 
-Two isolated cloud networks, now functioning as one private network.
+**Azure VM → AWS EC2**
+<img width="568" height="211" alt="ping-azure-to-aws" src="https://github.com/user-attachments/assets/14daf328-cfdb-4231-8d0a-397225933283" />
+> Azure VM (10.1.1.4) pinging AWS EC2 (10.2.1.109). 0% packet loss, ~5ms latency. S2S VPN tunnel operational.
 
----
 
-Does this flow make more sense? Ready to start the implementation?
+
+
+
+
+
+
+
+
+

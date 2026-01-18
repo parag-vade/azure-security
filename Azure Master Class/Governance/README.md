@@ -1,0 +1,61 @@
+## Why Govern cloud?
+- In on-prem set up, app team goes to operations team for spinning up resources they want. Operations team checks resources requested against organization's policy. If request meets criteria, resources are created. Else, sent back to App team
+- In Cloud - App team has direct access to spin up resources. Hence, a mechanism to 'enforce' organization's policies is required = Governance
+- Cloud works on 'shared responsibility' model and it applied to governance and compliance as well. Purview Portal helps track compliance status.
+
+## Azure governance components
+### Management Groups
+- MGs can be used to organize subscriptions based on various criterial like business unit, geography, environment, etc and implement policies at MG level
+- There's a fixed Root MG. Below this, there can be up tp 6 levels of MGs. 
+- Max MGs per tenant = 10000
+- Usually, entra permissions are separate from Azure permissions. But Global Admin in Entra can elevate his access and get something like User Access Administrator over all subscriptions. Imp break glass capability to fix things is something is locked down.
+- **IMP Concept 'Relation between tenant and Entra ID'**: Tenant is an 'instance' of Entra ID, hence technically, it is called as Entra ID tenant (Old name- Azure AD tenant). When org requests ANY microsoft cloud service - Azure, M365, etc - Microsoft provisions a dedicated tenant. Entra ID is like a building and Tenant is . Every subscription has to be part of exactly one tenant. Tenant provides identity plane. Hence, using your security reader role, you can see all subscriptions in the tenant. 
+
+### Subscriptions
+- Limits - unlimited number of subscriptions in a tenant, 980 RGs per subscription, 50 tags per subscription
+
+
+### Resource Groups
+- Every azure resource lives in only one RG
+- RGs cannot be nested - there cannot be a RG inside another RG
+- Resources with common lifecycle (deployed and deleted together) can be grouped inside a RG. Better for having related resources together and can be deleted conveniently in one go.
+- Granular access control is another purpose of RG. RBAC permissions can be applied at RG level. 
+- Azure policies can also be applied on a RG (Policies can be applied on single resource as well)
+- Region needs to be selected while creating a RG. But just metadata lives in this region. Resources from different regions can be in same RG.
+- Once created, RG can not be renamed. If need to rename, create a new RG and move resources to that RG
+
+
+### Naming Standard
+-  Should be able to read the name of the resource and know basic info about it like purpose, account, region, etc. Org must have a naming convention- applied uniformly across cloud and on-prem.
+
+### Tags
+- Org also must have tagging strategy. Useful for sophesticated filtering and reporting on resources.
+- Microsoft suggests some minimum tags like- Workload name, Data classification(Green, Yellow, Red), Business criticality(Low, Med, High), Business Unit (LRL, MQ, etc), Environment, Azure region, Owner, etc. Not just keys but values of tags should also be standardized. Else, Environment: Prod, Production, prod = inconsistency.
+- Can use Policy to enforce consistent tagging. Be carefuly of 'Deny' effect of such policy.
+- Tags are not inherited by default. But can have azure policy like 'Inherit tags from RG/Sub if missing'
+
+### Locks
+- To protect against accidental deletion
+- Types- Read-only (resource becomes immutable) and Delete (resource can be modified, but not deleted)
+- Scope is inherited down the resources
+- Applies to Control plane only (ARM), not data plane. E.g. Read-only lock on key-vault= cannot create a new secret (control plane action) but application retrieving secret key vault data plane API=allowed
+
+### Quick note on ARM
+- Everything in Azure is made of resources. Resources are defined in Resource providers. Resource has properties and actions. Knowing this is imp to understand Policies. Properties section of Resource is used in Policies (in 'field' section)
+- E.g. While deploying Storage account using terraform, type=Microsoft.Storage/storageAccounts. ARM receives request --> routes to Microsoft.Storage provider. If there's policy that blocks storage accounts with HTTP, the policy 'field' check resource properties in the ARM request.
+
+
+### RBAC
+- Role is collection of permissions. Role is ***generally*** applied on a 'Group' and security principal (users, service principals) are added to group. Then scope of the role is decided while 'Assigning' the role = decides where permissions mentioned in the role can be performed.
+- Role can be scoped at resource level also. But gets tricky to manage. Better- group resources logically in RGs and apply at RG scope. Or sub/MG.
+- Generally, RBAC roles allow control plane action. But some roles also support data plane action - which required access keys earlier. Integrating data plane action with RBAC improves security(no shared keys to leak/rotate, granular permissions and auditable via Entra ID) E.g. Key Vault Secrets User, Storage Blob Data Reader
+- If multiple roles assigned to user = gets sum of all permissions
+
+
+
+
+
+
+
+
+

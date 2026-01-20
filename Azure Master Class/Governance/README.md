@@ -52,8 +52,18 @@
 - If multiple roles assigned to user = gets sum of all permissions
 
 
+Custom Role
+- If no built in role for your use case
+- Custom role contains- Actions NotActions
+- DataActions NotDataActions
+- 5000 custom roles per tenant
+
+Not active, but Eligible assignment. Just enough permission + just in time
 
 
+### ABAC
+- 
+- Limited support but growing
 
 
 
